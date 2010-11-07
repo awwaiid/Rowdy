@@ -1,0 +1,50 @@
+#!/home/awwaiid/tmp/rakudo-star-2010.10/install/bin/perl6
+
+# Tested with: thttpd -p 8080 -c 'rowdy'
+
+use v6;
+
+# We'll want this no matter what
+print "Content-type: text/html\n\n";
+
+my $data_dir = 'data';
+
+my $query_string = %*ENV<QUERY_STRING>;
+my $page_name = %*ENV<PATH_INFO>;
+
+# Strip the leading /
+$page_name ~~ s/^\///;
+
+# Let's tweak the page name, so they don't go clobbering my filesystem. For now
+# I'll just strip off bad-looking characters.
+$page_name ~~ s:g/ \/ / \ -\  /;
+$page_name ~~ s:g/<[.\\]>//;
+
+my $page_content = "This page does not exist!";
+
+if $page_name === "" {
+  $page_name = "Home";
+}
+
+# NOTE! must use .IO ~~ :e to check existence. Not well documented!
+if "$data_dir/$page_name".IO ~~ :e {
+  $page_content = slurp "$data_dir/$page_name";
+}
+
+# Now for the fun part... wiki markup -> HTML!
+# ...
+
+say "
+  <html>
+    <head>
+      <title>rowdy - " ~ $page_name ~ "</title>
+    </head>
+    <body>
+      <h2 id=heading>" ~ $page_name ~ "</h2>
+      <a href='?action=edit'>Edit</a><br>
+      " ~ $page_content ~ "
+    </body>
+  </html>
+";
+
+
