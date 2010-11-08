@@ -41,8 +41,26 @@ say "
     </head>
     <body>
       <h2 id=heading>" ~ $page_name ~ "</h2>
-      <a href='?action=edit'>Edit</a><br>
-      " ~ $page_content ~ "
+      Query string: [" ~ $query_string ~ "]<br>
+";
+
+if $query_string ~~ /action \= edit/ {
+
+  say "
+    <form>
+      <textarea name=content rows=10 cols=60>" ~ $page_content ~ "</textarea>
+      <br>
+      <input type=submit name=save value=Save>
+    </form>
+  ";
+
+} else {
+
+  say "<a href='?action=edit'>Edit</a><br>" ~ $page_content;
+
+}
+
+say "
     </body>
   </html>
 ";
